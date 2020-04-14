@@ -12,6 +12,9 @@ class LogisticModel():
         Args: 1-D array of cases at each time step
         '''
         self.parameters = np.random.logistic(size = 3)
+        absArr = np.vectorize(abs)
+        self.parameters = absArr(self.parameters/(max(self.parameters)))
+        print(self.parameters)
         self.x = np.array([i for i in range(len(cases))])
         self.y = np.array(cases)
 
@@ -45,5 +48,13 @@ class LogisticModel():
         Graphs the data with logistic model
         '''
         plt.scatter(self.x, self.y)
-        plt.plot(x, predict(x))
+        predictArr = np.vectorize(self.predict)
+        plt.plot(self.x, predictArr(self.x))
         plt.title('Logistic Model Predictions')
+        plt.show()
+        plt.scatter(self.x, self.y)
+        predictArr = np.vectorize(self.predict)
+        graphX = np.append(self.x, [i for i in range(len(self.x), len(self.x)+100)])
+        plt.plot(graphX, predictArr(graphX))
+        plt.title('Logistic Model Predictions')
+        plt.show()
