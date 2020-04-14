@@ -11,9 +11,7 @@ class LogisticModel():
 
         Args: 1-D array of cases at each time step
         '''
-        self.parameters = np.random.logistic(size = 3)
-        absArr = np.vectorize(abs)
-        self.parameters = absArr(self.parameters/(max(self.parameters)))
+        self.parameters = np.random.exponential(size = 3)
         print(self.parameters)
         self.x = np.array([i for i in range(len(cases))])
         self.y = np.array(cases)
@@ -31,7 +29,7 @@ class LogisticModel():
         '''
         Trains logistic growth model
         '''
-        bounds = (0, [1000000000, 5, 1000000000])
+        bounds = (0, [1e10, 10, 1e10])
         self.parameters, covariance = curve_fit(self.logistic, self.x, self.y, bounds=bounds, p0=self.parameters)
 
     def predict(self, t):
@@ -49,12 +47,17 @@ class LogisticModel():
         '''
         plt.scatter(self.x, self.y)
         predictArr = np.vectorize(self.predict)
-        plt.plot(self.x, predictArr(self.x))
-        plt.title('Logistic Model Predictions')
-        plt.show()
-        plt.scatter(self.x, self.y)
-        predictArr = np.vectorize(self.predict)
-        graphX = np.append(self.x, [i for i in range(len(self.x), len(self.x)+100)])
+        graphX = np.append(self.x, [i for i in range(len(self.x), len(self.x)*2)])
+        numOfDays = 0
+        for x in range(len(graphX[len(self.x):])):
+            if self.predict(graphX[len(self.x) + x]) > self.parameters[2]*(0.999):
+                numOfDays = x + 1
+                break
+        if (numOfDays == 0):
+            numOfDays = "More Than " + str(len(self.x))
         plt.plot(graphX, predictArr(graphX))
-        plt.title('Logistic Model Predictions')
+        plt.title('Logistic Model Predictions | Max at ' + str("%.1f" % self.parameters[2]) + " Cases\nReached in " + str(numOfDays) + " Days") 
+        plt.ylabel("Number of Cases")
+        plt.xlabel("Days")
+        print(self.parameters)
         plt.show()
