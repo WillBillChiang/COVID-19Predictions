@@ -3,6 +3,7 @@ import pandas as pd
 from consts import Consts
 import numpy as np
 from logistic import LogisticModel
+import lstm
 
 
 class DataAnalyzer:
@@ -103,8 +104,12 @@ if __name__ == '__main__':
     da.reportData()
 
     totalUSCases = np.array([da.getTotal(da.data, t=i) for i in range(1, len(da.data.columns))])
-    model = LogisticModel(totalUSCases)
-    model.trainLogistic()
-    model.graph()
+    print(totalUSCases)
+    # model = LogisticModel(totalUSCases)
+    # model.trainLogistic()
+    # model.graph()
+
+    LSTM = lstm.LSTMModel(totalUSCases)
+    LSTM.model()
 
 # df['State']
