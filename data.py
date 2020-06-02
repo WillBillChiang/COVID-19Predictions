@@ -100,6 +100,8 @@ class DataAnalyzer:
 
 
 if __name__ == '__main__':
+    # TESTING CODE
+
     da = DataAnalyzer()
     da.reportData()
 
@@ -109,7 +111,7 @@ if __name__ == '__main__':
     # model.trainLogistic()
     # model.graph()
 
-    LSTM = lstm.LSTMModel(totalUSCases)
+    LSTM = lstm.LSTMModel(totalUSCases, 10, 30, 32, 2000)
     LSTM.model()
 
 # df['State']

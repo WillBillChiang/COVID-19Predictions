@@ -3,34 +3,36 @@ from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dense
 
-DAYS_INTO_FUTURE = 10
-SAMPLE_SIZE = 30
-
-def split(cases):
+class LSTMModel():
+    def split(self, cases):
         dataX = []
         dataY = []
-        for i in range(len(cases)-(SAMPLE_SIZE+DAYS_INTO_FUTURE)):
-            dataX.append(cases[i:i+SAMPLE_SIZE])
-            dataY.append(cases[i+(SAMPLE_SIZE+DAYS_INTO_FUTURE)])
+        for i in range(len(cases)-(self.__sampleSize+self.__daysIntoFuture)):
+            dataX.append(cases[i:i+self.__sampleSize])
+            dataY.append(cases[i+(self.__sampleSize+self.__daysIntoFuture)])
         return np.array(dataX), np.array(dataY)
 
-class LSTMModel():
-    def __init__(self, cases):
-        self.__dataX, self.__dataY = split(cases)
-        self.__modelInput = cases[-SAMPLE_SIZE:]
+    def __init__(self, cases, daysIntoFuture, sampleSize, lstmUnits, epochs):
+        self.__daysIntoFuture = daysIntoFuture
+        self.__sampleSize = sampleSize
+        self.__lstmUnits = lstmUnits
+        self.__epochs = epochs
+        self.__dataX, self.__dataY = self.split(cases)
+        self.__modelInput = cases[-sampleSize:]
+
         print(self.__dataX, self.__dataY)
     
     def model(self):
         model = Sequential()
-        model.add(LSTM(32, activation='relu', input_shape=(SAMPLE_SIZE, 1)))
+        model.add(LSTM(self.__lstmUnits, activation='relu', return_sequences=True, input_shape=(self.__sampleSize, 1)))
+        model.add(LSTM(self.__lstmUnits, activation='relu'))
         model.add(Dense(1))
         model.compile(optimizer='adam', loss='mse')
 
-        X = self.__dataX.reshape((len(self.__dataX), SAMPLE_SIZE, 1))
+        X = self.__dataX.reshape((len(self.__dataX), self.__sampleSize, 1))
 
-        model.fit(X, self.__dataY, epochs=5000, verbose=1)
+        model.fit(X, self.__dataY, epochs=self.__epochs, verbose=1)
 
-        modelInput = self.__modelInput.reshape(1, SAMPLE_SIZE, 1)
+        modelInput = self.__modelInput.reshape(1, self.__sampleSize, 1)
         prediction = model.predict(modelInput, verbose=0)
-        print(prediction)
-        
+        print(prediction[0][0], "Cases Expected in", self.__daysIntoFuture, "Days")
