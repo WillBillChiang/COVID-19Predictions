@@ -12,6 +12,7 @@ class LogisticModel():
         Args: 1-D array of cases at each time step
         '''
         self.parameters = np.random.exponential(size = 3)
+        print("Parameter Initialization")
         print(self.parameters)
         self.x = np.array([i for i in range(len(cases))])
         self.y = np.array(cases)
@@ -59,5 +60,6 @@ class LogisticModel():
         plt.title('Logistic Model Predictions | Max at ' + str("%.1f" % self.parameters[2]) + " Cases\nReached in " + str(numOfDays) + " Days") 
         plt.ylabel("Number of Cases")
         plt.xlabel("Days")
+        print("Final Parameters")
         print(self.parameters)
         plt.show()
